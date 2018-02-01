@@ -130,13 +130,13 @@ public:
 };
 
 
-class ofAppiOSWindow2 : public ofAppBaseGLESWindow {
+class ofAppiOSWindowUIView : public ofAppBaseGLESWindow {
 public:
 
-    static ofAppiOSWindow2 * getInstance();
+    static ofAppiOSWindowUIView * getInstance();
 	
-	ofAppiOSWindow2();
-	~ofAppiOSWindow2();
+	ofAppiOSWindowUIView();
+	~ofAppiOSWindowUIView();
     
     static void loop();
     static bool doesLoop(){ return true; }

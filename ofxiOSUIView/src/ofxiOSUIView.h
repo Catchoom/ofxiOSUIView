@@ -8,10 +8,9 @@
 #import <UIKit/UIKit.h>
 
 #include "ofMain.h"
-//#import "ofAppiOSWindow.h"
 #import "ES1Renderer.h"
 #import "ES2Renderer.h"
-#include "ofAppiOSWindow2.h"
+#include "ofAppiOSWindowUIView.h"
 
 class ofxiOSBridgeApp;
 
@@ -33,19 +32,6 @@ class ofxiOSBridgeApp;
 @property (strong, nonatomic) NSTimer* animationTimer;
 
 @property (nonatomic, weak) id <ofxiOSUIViewProtocol> delegate;
-
-- (void) ofxiOSViewSetup;
-- (void) ofxiOSViewUpdate;
-- (void) ofxiOSViewDraw;
-- (void) ofxiOSViewExit;
-- (void) ofxiOSViewTouchDown: (ofTouchEventArgs&) touch;
-- (void) ofxiOSViewTouchMoved: (ofTouchEventArgs&) touch;
-- (void) ofxiOSViewTouchUp: (ofTouchEventArgs&) touch;
-- (void) ofxiOSViewTouchDoubleTap: (ofTouchEventArgs&) touch;
-- (void) ofxiOSViewTouchCancelled: (ofTouchEventArgs&) touch;
-- (void) ofxiOSViewLostFocus;
-- (void) ofxiOSViewGotFocus;
-- (void) ofxiOSViewDeviceOrientationChanged: (int) newOrientation;
 
 @end
 

@@ -18,8 +18,7 @@
 		9936F6101BFA4DEE00891288 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9936F60F1BFA4DEE00891288 /* Images.xcassets */; };
 		9936F6121BFA65F100891288 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9936F6111BFA65F100891288 /* Main.storyboard */; };
 		9969E7561C782C4500DEF0F6 /* CoreMotion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9969E7551C782C4500DEF0F6 /* CoreMotion.framework */; };
-		A0B2615A200F67A100F79D9B /* ofAppiOSWindow2.mm in Sources */ = {isa = PBXBuildFile; fileRef = A0B26159200F67A100F79D9B /* ofAppiOSWindow2.mm */; };
-		A0B2615D200FB72F00F79D9B /* ofAppiOSWindowUIView.mm in Sources */ = {isa = PBXBuildFile; fileRef = A0B2615B200FB72F00F79D9B /* ofAppiOSWindowUIView.mm */; };
+		A0B2615A200F67A100F79D9B /* ofAppiOSWindowUIView.mm in Sources */ = {isa = PBXBuildFile; fileRef = A0B26159200F67A100F79D9B /* ofAppiOSWindowUIView.mm */; };
 		BB16EBD20F2B2A9500518274 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BB16EBD10F2B2A9500518274 /* OpenGLES.framework */; };
 		BB16EBD90F2B2AB500518274 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BB16EBD80F2B2AB500518274 /* QuartzCore.framework */; };
 		BBE5EAB80F49AD8400F28951 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BBE5EAB70F49AD8400F28951 /* AudioToolbox.framework */; };
@@ -68,10 +67,8 @@
 		9936F60F1BFA4DEE00891288 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		9936F6111BFA65F100891288 /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
 		9969E7551C782C4500DEF0F6 /* CoreMotion.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMotion.framework; path = System/Library/Frameworks/CoreMotion.framework; sourceTree = SDKROOT; };
-		A0B26158200F67A100F79D9B /* ofAppiOSWindow2.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ofAppiOSWindow2.h; sourceTree = "<group>"; };
-		A0B26159200F67A100F79D9B /* ofAppiOSWindow2.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = ofAppiOSWindow2.mm; sourceTree = "<group>"; };
-		A0B2615B200FB72F00F79D9B /* ofAppiOSWindowUIView.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = ofAppiOSWindowUIView.mm; path = ../ofxiOSUIView/src/ofAppiOSWindowUIView.mm; sourceTree = "<group>"; };
-		A0B2615C200FB72F00F79D9B /* ofAppiOSWindowUIView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = ofAppiOSWindowUIView.h; path = ../ofxiOSUIView/src/ofAppiOSWindowUIView.h; sourceTree = "<group>"; };
+		A0B26158200F67A100F79D9B /* ofAppiOSWindowUIView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ofAppiOSWindowUIView.h; sourceTree = "<group>"; };
+		A0B26159200F67A100F79D9B /* ofAppiOSWindowUIView.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = ofAppiOSWindowUIView.mm; sourceTree = "<group>"; };
 		BB16EBD10F2B2A9500518274 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
 		BB16EBD80F2B2AB500518274 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		BB24DDC910DA781C00E9C588 /* ofxiOS-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "ofxiOS-Info.plist"; sourceTree = "<group>"; };
@@ -161,14 +158,12 @@
 		3CB031D3693C86343C37AF3A /* src */ = {
 			isa = PBXGroup;
 			children = (
-				A0B26158200F67A100F79D9B /* ofAppiOSWindow2.h */,
-				A0B26159200F67A100F79D9B /* ofAppiOSWindow2.mm */,
+				A0B26158200F67A100F79D9B /* ofAppiOSWindowUIView.h */,
+				A0B26159200F67A100F79D9B /* ofAppiOSWindowUIView.mm */,
 				10A37D3D992AA1164CCF6E6A /* ofxiOSBridgeApp.h */,
 				C1CC564448E258B449EFE9DF /* ofxiOSBridgeApp.mm */,
 				502A7C0BDA986B9B7BCA58DD /* ofxiOSUIView.h */,
 				712ADD9E084C397F90C0D747 /* ofxiOSUIView.mm */,
-				A0B2615B200FB72F00F79D9B /* ofAppiOSWindowUIView.mm */,
-				A0B2615C200FB72F00F79D9B /* ofAppiOSWindowUIView.h */,
 			);
 			name = src;
 			sourceTree = "<group>";
@@ -359,9 +354,8 @@
 			files = (
 				E4D8936E11527B74007E1F53 /* main.mm in Sources */,
 				C26F522BB9B5CE298C8EB65C /* MyAppDelegate.mm in Sources */,
-				A0B2615D200FB72F00F79D9B /* ofAppiOSWindowUIView.mm in Sources */,
 				2BDDB86A35717AA8AB725570 /* testUIViewController.mm in Sources */,
-				A0B2615A200F67A100F79D9B /* ofAppiOSWindow2.mm in Sources */,
+				A0B2615A200F67A100F79D9B /* ofAppiOSWindowUIView.mm in Sources */,
 				6AC2F151147F3234DA967F18 /* ofxiOSBridgeApp.mm in Sources */,
 				DF393AF0409439F3EDEA6686 /* ofxiOSUIView.mm in Sources */,
 			);

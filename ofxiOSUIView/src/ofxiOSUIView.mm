@@ -9,7 +9,7 @@
 
 #import "ofxiOSBridgeApp.h"
 #include "ofxiOS.h"
-#include "ofAppiOSWindow2.h"
+#include "ofAppiOSWindowUIView.h"
 
 @implementation ofxiOSUIView
 
@@ -65,7 +65,7 @@
     ofInit();
     
     ofiOSWindowSettings2 windowSettings;
-    mWindow = std::make_shared<ofAppiOSWindow2>();
+    mWindow = std::make_shared<ofAppiOSWindowUIView>();
     mWindow->setup(windowSettings);
     ofGetMainLoop()->setCurrentWindow(mWindow);
 
@@ -96,7 +96,7 @@
 	
 	self->mWindow->renderer()->startRender();
 	
-	if(((ofAppiOSWindow2*)self->mWindow.get())->isSetupScreenEnabled())
+	if(((ofAppiOSWindowUIView*)self->mWindow.get())->isSetupScreenEnabled())
 	{
 		self->mWindow->renderer()->setupScreen();
 	}
@@ -124,7 +124,7 @@
 -(void) setupOfApp {
     [self updateViewLayout];
 	
-	if(((ofAppiOSWindow2*)self->mWindow.get())->isProgrammableRenderer() == true) {
+	if(((ofAppiOSWindowUIView*)self->mWindow.get())->isProgrammableRenderer() == true) {
 		//static_cast<ofGLProgrammableRenderer*>(self->window->renderer().get())->setup(settings.glesVersion, 0);
 	} else{
 		static_cast<ofGLRenderer*>(self->mWindow->renderer().get())->setup();
@@ -219,7 +219,7 @@
 	
 	//self->window->windowPos.set(self.frame.origin.x * scaleFactor, self.frame.origin.y * scaleFactor, 0);
 	//self->window->windowSize.set(self.bounds.size.width * scaleFactor, self.bounds.size.height * scaleFactor, 0);
-    ofAppiOSWindow2* window = (ofAppiOSWindow2*)ofGetMainLoop()->getCurrentWindow().get();
+    ofAppiOSWindowUIView* window = (ofAppiOSWindowUIView*)ofGetMainLoop()->getCurrentWindow().get();
     
     window->setWindowPosition(self.frame.origin.x * scaleFactor, self.frame.origin.y * scaleFactor);
     window->setWindowShape(self.bounds.size.width * scaleFactor, self.bounds.size.height * scaleFactor);
@@ -235,58 +235,5 @@
     
 	//self->window->screenSize.set(currentScreen.bounds.size.width * scaleFactor, currentScreen.bounds.size.height * scaleFactor, 0);
 }
-
-#pragma mark protocol
-
-- (void) ofxiOSViewSetup {
-	[self.delegate ofxiOSViewSetup];
-}
-
-- (void) ofxiOSViewUpdate {
-	[self.delegate ofxiOSViewUpdate];
-}
-
-- (void) ofxiOSViewDraw {
-	[self.delegate ofxiOSViewDraw];
-}
-
-- (void) ofxiOSViewExit {
-	[self.delegate ofxiOSViewExit];
-}
-
-- (void) ofxiOSViewTouchUp:(ofTouchEventArgs &)touch {
-	[self.delegate ofxiOSViewTouchUp:touch];
-}
-
-- (void) ofxiOSViewTouchDown:(ofTouchEventArgs &)touch {
-	[self.delegate ofxiOSViewTouchDown:touch];
-}
-
-- (void) ofxiOSViewTouchDoubleTap:(ofTouchEventArgs &)touch {
-	[self.delegate ofxiOSViewTouchDoubleTap:touch];
-}
-
-- (void) ofxiOSViewTouchMoved:(ofTouchEventArgs &)touch {
-	[self.delegate ofxiOSViewTouchMoved:touch];
-}
-
-- (void) ofxiOSViewTouchCancelled:(ofTouchEventArgs &)touch {
-	[self.delegate ofxiOSViewTouchCancelled:touch];
-}
-
-- (void) ofxiOSViewGotFocus {
-	[self.delegate ofxiOSViewGotFocus];
-}
-
-- (void) ofxiOSViewLostFocus {
-	[self.delegate ofxiOSViewLostFocus];
-}
-
-- (void) ofxiOSViewDeviceOrientationChanged:(int)newOrientation {
-	[self.delegate ofxiOSViewDeviceOrientationChanged:newOrientation];
-}
-
-#pragma mark -
-
 
 @end
