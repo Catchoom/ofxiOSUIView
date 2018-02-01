@@ -8,22 +8,24 @@
 #import <UIKit/UIKit.h>
 
 #include "ofMain.h"
-#import "ofAppiOSWindow.h"
+//#import "ofAppiOSWindow.h"
 #import "ES1Renderer.h"
 #import "ES2Renderer.h"
+#include "ofAppiOSWindow2.h"
 
 class ofxiOSBridgeApp;
 
 @protocol ofxiOSUIViewProtocol;
 
 @interface ofxiOSUIView : UIView {
-	ofxiOSBridgeApp* app;
-	ofAppiOSWindow * window;
+    ofxiOSBridgeApp* app;
+	//ofAppiOSWindow * window;
 	ESRendererVersion rendererVersion;
 	CGFloat scaleFactor;
 	CGFloat scaleFactorPref;
 	bool isViewLaidOut;
-	ofiOSWindowSettings settings;
+	ofiOSWindowSettings2 settings;
+    shared_ptr<ofAppBaseWindow> mWindow;
 }
 
 @property (strong, nonatomic) ES1Renderer* renderer;

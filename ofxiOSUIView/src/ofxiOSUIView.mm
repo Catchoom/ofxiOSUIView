@@ -1,4 +1,4 @@
-//
+    //
 //  ofxiOSUIView.m
 //  iPhone+OF Static Library
 //
@@ -9,6 +9,7 @@
 
 #import "ofxiOSBridgeApp.h"
 #include "ofxiOS.h"
+#include "ofAppiOSWindow2.h"
 
 @implementation ofxiOSUIView
 
@@ -60,7 +61,14 @@
 	settings.glesVersion = OFXIOS_RENDERER_ES1; // type of renderer to use, ES1, ES2, ES3
 	//settings.windowMode = OF_FULLSCREEN;
 	
-	self->window = (ofAppiOSWindow *)(ofCreateWindow(settings).get());
+	//self->window = (ofAppiOSWindow *)(ofCreateWindow(settings).get());
+    ofInit();
+    
+    ofiOSWindowSettings2 windowSettings;
+    mWindow = std::make_shared<ofAppiOSWindow2>();
+    mWindow->setup(windowSettings);
+    ofGetMainLoop()->setCurrentWindow(mWindow);
+
 	
 	rendererVersion = ESRendererVersion_11;
 	//rendererVersion = ESRendererVersion_20;
@@ -75,60 +83,61 @@
 	 static_cast<ofGLRenderer*>(self->window->renderer().get())->setup();
 	 }
 	 */
-}
+    }
 
-//- (void) drawRect:(CGRect)rect {
 
 - (void)drawView:(id)sender {
-	// NSLog(@"Window size: %f, %f", self.bounds.size.width, self.bounds.size.height);
-	self->window->events().notifyUpdate();
-	
+	// NSLog(@"Window size: %f, %f", self.bounds.size.width, self.bounds.size.height);	
 	
 	[self.glLock lock];
 	[self.renderer startRender];
 	
-	//self->window->events().notifyUpdate();
+	self->mWindow->events().notifyUpdate();
 	
-	self->window->renderer()->startRender();
+	self->mWindow->renderer()->startRender();
 	
-	if(self->window->isSetupScreenEnabled())
+	if(((ofAppiOSWindow2*)self->mWindow.get())->isSetupScreenEnabled())
 	{
-		self->window->renderer()->setupScreen();
+		self->mWindow->renderer()->setupScreen();
 	}
 	
-	self->window->events().notifyDraw();
+	self->mWindow->events().notifyDraw();
 	
-	self->window->renderer()->finishRender();
+	self->mWindow->renderer()->finishRender();
 	
 	[self.renderer finishRender];
 	[self.glLock unlock];
 }
 
+- (void) updateViewLayout {
+    [self printDimensions];
+    [self updateScaleFactor];
+    
+    [self.renderer startRender];
+    [self.renderer resizeFromLayer:(CAEAGLLayer*)self.layer];
+    [self.renderer finishRender];
+    
+    [self updateDimensions];
+    
+}
+
 -(void) setupOfApp {
-	[self printDimensions];
-	[self updateScaleFactor];
+    [self updateViewLayout];
 	
-	[self.renderer startRender];
-	[self.renderer resizeFromLayer:(CAEAGLLayer*)self.layer];
-	[self.renderer finishRender];
-	
-	[self updateDimensions];
-	
-	
-	if(self->window->isProgrammableRenderer() == true) {
-		static_cast<ofGLProgrammableRenderer*>(self->window->renderer().get())->setup(settings.glesVersion, 0);
+	if(((ofAppiOSWindow2*)self->mWindow.get())->isProgrammableRenderer() == true) {
+		//static_cast<ofGLProgrammableRenderer*>(self->window->renderer().get())->setup(settings.glesVersion, 0);
 	} else{
-		static_cast<ofGLRenderer*>(self->window->renderer().get())->setup();
+		static_cast<ofGLRenderer*>(self->mWindow->renderer().get())->setup();
 	}
 	
-	self->app = new ofxiOSBridgeApp(self);
-	ofRunApp(app);
-	
-	ofxiOSAlerts.addListener(self->app);
+    self->app = new ofxiOSBridgeApp(self);
+    ofRunApp(mWindow, std::move(std::shared_ptr<ofBaseApp>(self->app)));
+
+    ofxiOSAlerts.addListener((ofxiOSBridgeApp*)self->app);
 	
 	ofDisableTextureEdgeHack();
 	
-	self->window->events().notifySetup();
+	//self->mWindow->events().notifySetup();
 	//self->window->renderer()->clear();
 	
 	int animationFrameInterval = 1;
@@ -151,17 +160,18 @@
 	NSLog(@"Layout subviews");
 	[self updateDimensions];
 	if (isViewLaidOut) {
-		// We need a notification for window layout changes
+        [self updateViewLayout];
 	} else {
 		[self setupOfApp];
 		isViewLaidOut = true;
 	}
 }
 
+
 - (void) removeFromSuperview {
 	[self.animationTimer invalidate];
 	self.animationTimer = nil;
-	self->window->close();
+	self->mWindow->close();
 }
 
 -(void)printFrame:(CGRect)rect label:(NSString*)comment
@@ -207,15 +217,23 @@
 - (void)updateDimensions
 {
 	
-	self->window->windowPos.set(self.frame.origin.x * scaleFactor, self.frame.origin.y * scaleFactor, 0);
-	self->window->windowSize.set(self.bounds.size.width * scaleFactor, self.bounds.size.height * scaleFactor, 0);
+	//self->window->windowPos.set(self.frame.origin.x * scaleFactor, self.frame.origin.y * scaleFactor, 0);
+	//self->window->windowSize.set(self.bounds.size.width * scaleFactor, self.bounds.size.height * scaleFactor, 0);
+    ofAppiOSWindow2* window = (ofAppiOSWindow2*)ofGetMainLoop()->getCurrentWindow().get();
+    
+    window->setWindowPosition(self.frame.origin.x * scaleFactor, self.frame.origin.y * scaleFactor);
+    window->setWindowShape(self.bounds.size.width * scaleFactor, self.bounds.size.height * scaleFactor);
 	
 	NSLog(@"Window size: %f, %f", self.bounds.size.width, self.bounds.size.height);
 	UIScreen * currentScreen = self.window.screen;  // current screen is the screen that GLView is attached to.
 	if(!currentScreen) {                            // if GLView is not attached, assume to be main device screen.
 		currentScreen = [UIScreen mainScreen];
 	}
-	self->window->screenSize.set(currentScreen.bounds.size.width * scaleFactor, currentScreen.bounds.size.height * scaleFactor, 0);
+    
+    window->screenSize.x = currentScreen.bounds.size.width * scaleFactor;
+    window->screenSize.y = currentScreen.bounds.size.height * scaleFactor;
+    
+	//self->window->screenSize.set(currentScreen.bounds.size.width * scaleFactor, currentScreen.bounds.size.height * scaleFactor, 0);
 }
 
 #pragma mark protocol
