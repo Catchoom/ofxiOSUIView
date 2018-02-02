@@ -83,6 +83,8 @@
 	 static_cast<ofGLRenderer*>(self->window->renderer().get())->setup();
 	 }
 	 */
+    
+    activeTouches = [[NSMutableDictionary alloc] init];
     }
 
 
@@ -425,7 +427,14 @@
     [self touchesEnded:touches withEvent:event];
 }
 
-- (void) destroy {
+- (void) dealloc {
+    
+    ofAppiOSWindowUIView* window = (ofAppiOSWindowUIView*)ofGetMainLoop()->getCurrentWindow().get();
+    window->events().notifyExit();
+    
+    ofxiOSAlerts.removeListener(self->app);
+    
+    ofGetMainLoop()->exit();
     
     bInit = NO;
 }
