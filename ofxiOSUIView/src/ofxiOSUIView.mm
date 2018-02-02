@@ -146,6 +146,8 @@
 														 selector:@selector(drawView:)
 														 userInfo:nil
 														  repeats:TRUE];
+    
+    bInit = YES;
 }
 
 -(void) didMoveToSuperview {
@@ -235,5 +237,198 @@
     
 	//self->window->screenSize.set(currentScreen.bounds.size.width * scaleFactor, currentScreen.bounds.size.height * scaleFactor, 0);
 }
+
+
+//------------------------------------------------------
+- (CGPoint)orientateTouchPoint:(CGPoint)touchPoint {
+    
+    ofAppiOSWindowUIView* window = (ofAppiOSWindowUIView*)ofGetMainLoop()->getCurrentWindow().get();
+    if(window->doesHWOrientation()) {
+        return touchPoint;
+    }
+    
+    ofOrientation orientation = ofGetOrientation();
+    CGPoint touchPointOriented = CGPointZero;
+    
+    switch(orientation) {
+        case OF_ORIENTATION_180:
+            touchPointOriented.x = ofGetWidth() - touchPoint.x;
+            touchPointOriented.y = ofGetHeight() - touchPoint.y;
+            break;
+            
+        case OF_ORIENTATION_90_LEFT:
+            touchPointOriented.x = touchPoint.y;
+            touchPointOriented.y = ofGetHeight() - touchPoint.x;
+            break;
+            
+        case OF_ORIENTATION_90_RIGHT:
+            touchPointOriented.x = ofGetWidth() - touchPoint.y;
+            touchPointOriented.y = touchPoint.x;
+            break;
+            
+        case OF_ORIENTATION_DEFAULT:
+        default:
+            touchPointOriented = touchPoint;
+            break;
+    }
+    return touchPointOriented;
+}
+
+//------------------------------------------------------
+
+-(void) resetTouches {
+    
+    [activeTouches removeAllObjects];
+}
+
+- (void)touchesBegan:(NSSet *)touches
+           withEvent:(UIEvent *)event{
+    
+    if(!bInit) {
+        // if the glView is destroyed which also includes the OF app,
+        // we no longer need to pass on these touch events.
+        return;
+    }
+    
+    ofAppiOSWindowUIView* window = (ofAppiOSWindowUIView*)ofGetMainLoop()->getCurrentWindow().get();
+    
+    for(UITouch *touch in touches) {
+        int touchIndex = 0;
+        while([[activeTouches allValues] containsObject:[NSNumber numberWithInt:touchIndex]]){
+            touchIndex++;
+        }
+        
+        [activeTouches setObject:[NSNumber numberWithInt:touchIndex] forKey:[NSValue valueWithPointer:(void *)touch]];
+        
+        CGPoint touchPoint = [touch locationInView:self];
+        
+        touchPoint.x *= scaleFactor; // this has to be done because retina still returns points in 320x240 but with high percision
+        touchPoint.y *= scaleFactor;
+        touchPoint = [self orientateTouchPoint:touchPoint];
+        
+        if( touchIndex==0 ){
+            window->events().notifyMousePressed(touchPoint.x, touchPoint.y, 0);
+        }
+        
+        ofTouchEventArgs touchArgs;
+        touchArgs.numTouches = [[event touchesForView:self] count];
+        touchArgs.x = touchPoint.x;
+        touchArgs.y = touchPoint.y;
+        touchArgs.id = touchIndex;
+        if([touch tapCount] == 2){
+            touchArgs.type = ofTouchEventArgs::doubleTap;
+            ofNotifyEvent(window->events().touchDoubleTap,touchArgs);    // send doubletap
+        }
+        touchArgs.type = ofTouchEventArgs::down;
+        ofNotifyEvent(window->events().touchDown,touchArgs);    // but also send tap (upto app programmer to ignore this if doubletap came that frame)
+    }
+}
+
+//------------------------------------------------------
+- (void)touchesMoved:(NSSet *)touches
+           withEvent:(UIEvent *)event{
+    
+    if(!bInit) {
+        // if the glView is destroyed which also includes the OF app,
+        // we no longer need to pass on these touch events.
+        return;
+    }
+    ofAppiOSWindowUIView* window = (ofAppiOSWindowUIView*)ofGetMainLoop()->getCurrentWindow().get();
+    
+    for(UITouch *touch in touches){
+        int touchIndex = [[activeTouches objectForKey:[NSValue valueWithPointer:(void*)touch]] intValue];
+        
+        CGPoint touchPoint = [touch locationInView:self];
+        
+        touchPoint.x *= scaleFactor; // this has to be done because retina still returns points in 320x240 but with high percision
+        touchPoint.y *= scaleFactor;
+        touchPoint = [self orientateTouchPoint:touchPoint];
+        
+        if( touchIndex==0 ){
+            window->events().notifyMouseDragged(touchPoint.x, touchPoint.y, 0);
+        }
+        ofTouchEventArgs touchArgs;
+        touchArgs.numTouches = [[event touchesForView:self] count];
+        touchArgs.x = touchPoint.x;
+        touchArgs.y = touchPoint.y;
+        touchArgs.id = touchIndex;
+        touchArgs.type = ofTouchEventArgs::move;
+        ofNotifyEvent(window->events().touchMoved, touchArgs);
+    }
+}
+
+//------------------------------------------------------
+- (void)touchesEnded:(NSSet *)touches
+           withEvent:(UIEvent *)event{
+    
+    if(!bInit) {
+        // if the glView is destroyed which also includes the OF app,
+        // we no longer need to pass on these touch events.
+        return;
+    }
+    ofAppiOSWindowUIView* window = (ofAppiOSWindowUIView*)ofGetMainLoop()->getCurrentWindow().get();
+    
+    for(UITouch *touch in touches){
+        int touchIndex = [[activeTouches objectForKey:[NSValue valueWithPointer:(void*)touch]] intValue];
+        
+        [activeTouches removeObjectForKey:[NSValue valueWithPointer:(void*)touch]];
+        
+        CGPoint touchPoint = [touch locationInView:self];
+        
+        touchPoint.x *= scaleFactor; // this has to be done because retina still returns points in 320x240 but with high percision
+        touchPoint.y *= scaleFactor;
+        touchPoint = [self orientateTouchPoint:touchPoint];
+        
+        if( touchIndex==0 ){
+            window->events().notifyMouseReleased(touchPoint.x, touchPoint.y, 0);
+        }
+        
+        ofTouchEventArgs touchArgs;
+        touchArgs.numTouches = [[event touchesForView:self] count] - [touches count];
+        touchArgs.x = touchPoint.x;
+        touchArgs.y = touchPoint.y;
+        touchArgs.id = touchIndex;
+        touchArgs.type = ofTouchEventArgs::up;
+        ofNotifyEvent(window->events().touchUp, touchArgs);
+    }
+}
+
+//------------------------------------------------------
+- (void)touchesCancelled:(NSSet *)touches
+               withEvent:(UIEvent *)event{
+    
+    if(!bInit) {
+        // if the glView is destroyed which also includes the OF app,
+        // we no longer need to pass on these touch events.
+        return;
+    }
+    ofAppiOSWindowUIView* window = (ofAppiOSWindowUIView*)ofGetMainLoop()->getCurrentWindow().get();
+    
+    for(UITouch *touch in touches){
+        int touchIndex = [[activeTouches objectForKey:[NSValue valueWithPointer:(void*)touch]] intValue];
+        
+        CGPoint touchPoint = [touch locationInView:self];
+        
+        touchPoint.x *= scaleFactor; // this has to be done because retina still returns points in 320x240 but with high percision
+        touchPoint.y *= scaleFactor;
+        touchPoint = [self orientateTouchPoint:touchPoint];
+        
+        ofTouchEventArgs touchArgs;
+        touchArgs.numTouches = [[event touchesForView:self] count];
+        touchArgs.x = touchPoint.x;
+        touchArgs.y = touchPoint.y;
+        touchArgs.id = touchIndex;
+        touchArgs.type = ofTouchEventArgs::cancel;
+        ofNotifyEvent(window->events().touchCancelled, touchArgs);
+    }
+    
+    [self touchesEnded:touches withEvent:event];
+}
+
+- (void) destroy {
+    
+    bInit = NO;
+}
+
 
 @end

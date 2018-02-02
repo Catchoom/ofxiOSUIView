@@ -25,6 +25,8 @@ class ofxiOSBridgeApp;
 	bool isViewLaidOut;
 	ofiOSWindowSettings2 settings;
     shared_ptr<ofAppBaseWindow> mWindow;
+    NSMutableDictionary    * activeTouches;
+    bool bInit;
 }
 
 @property (strong, nonatomic) ES1Renderer* renderer;
