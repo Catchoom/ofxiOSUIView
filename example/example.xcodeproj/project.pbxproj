@@ -67,8 +67,8 @@
 		9936F60F1BFA4DEE00891288 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		9936F6111BFA65F100891288 /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
 		9969E7551C782C4500DEF0F6 /* CoreMotion.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMotion.framework; path = System/Library/Frameworks/CoreMotion.framework; sourceTree = SDKROOT; };
-		A0B26158200F67A100F79D9B /* ofAppiOSWindowUIView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ofAppiOSWindowUIView.h; sourceTree = "<group>"; };
-		A0B26159200F67A100F79D9B /* ofAppiOSWindowUIView.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = ofAppiOSWindowUIView.mm; sourceTree = "<group>"; };
+		A0B26158200F67A100F79D9B /* ofAppiOSWindowUIView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = ofAppiOSWindowUIView.h; path = ../ofxiOSUIView/src/ofAppiOSWindowUIView.h; sourceTree = "<group>"; };
+		A0B26159200F67A100F79D9B /* ofAppiOSWindowUIView.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = ofAppiOSWindowUIView.mm; path = ../ofxiOSUIView/src/ofAppiOSWindowUIView.mm; sourceTree = "<group>"; };
 		BB16EBD10F2B2A9500518274 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
 		BB16EBD80F2B2AB500518274 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		BB24DDC910DA781C00E9C588 /* ofxiOS-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "ofxiOS-Info.plist"; sourceTree = "<group>"; };
