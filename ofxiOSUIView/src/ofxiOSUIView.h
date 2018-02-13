@@ -8,32 +8,18 @@
 #import <UIKit/UIKit.h>
 
 #include "ofMain.h"
-#import "ES1Renderer.h"
-#import "ES2Renderer.h"
-#include "ofAppiOSWindowUIView.h"
 
 class ofxiOSBridgeApp;
 
 @protocol ofxiOSUIViewProtocol;
 
-@interface ofxiOSUIView : UIView {
-    ofxiOSBridgeApp* app;
-	//ofAppiOSWindow * window;
-	ESRendererVersion rendererVersion;
-	CGFloat scaleFactor;
-	CGFloat scaleFactorPref;
-	bool isViewLaidOut;
-	ofiOSWindowSettings2 settings;
-    shared_ptr<ofAppBaseWindow> mWindow;
-    NSMutableDictionary    * activeTouches;
-    bool bInit;
-}
-
-@property (strong, nonatomic) ES1Renderer* renderer;
-@property (strong, nonatomic) NSLock * glLock;
-@property (strong, nonatomic) NSTimer* animationTimer;
+@interface ofxiOSUIView : UIView
 
 @property (nonatomic, weak) id <ofxiOSUIViewProtocol> delegate;
+
+@property (nonatomic) bool autoSetup;
+
+- (void) setup;
 
 @end
 

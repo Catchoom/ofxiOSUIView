@@ -10,6 +10,26 @@
 #import "ofxiOSBridgeApp.h"
 #include "ofxiOS.h"
 #include "ofAppiOSWindowUIView.h"
+#import "ES1Renderer.h"
+#import "ES2Renderer.h"
+#include "ofAppiOSWindowUIView.h"
+
+@interface ofxiOSUIView () {
+    ofxiOSBridgeApp* app;
+    ESRendererVersion rendererVersion;
+    CGFloat scaleFactor;
+    CGFloat scaleFactorPref;
+    bool isViewLaidOut;
+    ofiOSWindowSettings2 settings;
+    shared_ptr<ofAppBaseWindow> mWindow;
+    NSMutableDictionary    * activeTouches;
+    bool bInit;
+    
+    ES1Renderer* renderer;
+    NSLock * glLock;
+    NSTimer* animationTimer;
+}
+@end
 
 @implementation ofxiOSUIView
 
@@ -21,6 +41,7 @@
 - (id) init {
 	self = [super init];
 	if (self) {
+        self.autoSetup = YES;
 		[self initializeRenderer];
 	}
 	return self;
@@ -29,6 +50,7 @@
 - (id) initWithCoder:(NSCoder *)aDecoder {
 	self = [super initWithCoder:aDecoder];
 	if (self) {
+        self.autoSetup = YES;
 		[self initializeRenderer];
 	}
 	return self;
@@ -37,6 +59,7 @@
 - (id) initWithFrame:(CGRect)frame {
 	self = [super initWithFrame:frame];
 	if (self != nil) {
+        self.autoSetup = YES;
 		[self initializeRenderer];
 	}
 	return self;
@@ -72,7 +95,7 @@
 	
 	rendererVersion = ESRendererVersion_11;
 	//rendererVersion = ESRendererVersion_20;
-	self.renderer = [[ES1Renderer alloc] initWithDepth:settings.enableDepth
+	renderer = [[ES1Renderer alloc] initWithDepth:settings.enableDepth
 												 andAA:settings.enableAntiAliasing
 										andFSAASamples:settings.numOfAntiAliasingSamples
 											 andRetina:settings.enableRetina];
@@ -91,8 +114,8 @@
 - (void)drawView:(id)sender {
 	// NSLog(@"Window size: %f, %f", self.bounds.size.width, self.bounds.size.height);	
 	
-	[self.glLock lock];
-	[self.renderer startRender];
+	[glLock lock];
+	[renderer startRender];
 	
 	self->mWindow->events().notifyUpdate();
 	
@@ -107,23 +130,28 @@
 	
 	self->mWindow->renderer()->finishRender();
 	
-	[self.renderer finishRender];
-	[self.glLock unlock];
+	[renderer finishRender];
+	[glLock unlock];
 }
 
 - (void) updateViewLayout {
     [self printDimensions];
     [self updateScaleFactor];
     
-    [self.renderer startRender];
-    [self.renderer resizeFromLayer:(CAEAGLLayer*)self.layer];
-    [self.renderer finishRender];
+    [renderer startRender];
+    [renderer resizeFromLayer:(CAEAGLLayer*)self.layer];
+    [renderer finishRender];
     
     [self updateDimensions];
     
 }
 
+- (void) setup {
+    [self setupOfApp];
+}
+
 -(void) setupOfApp {
+    isViewLaidOut = true;
     [self updateViewLayout];
 	
 	if(((ofAppiOSWindowUIView*)self->mWindow.get())->isProgrammableRenderer() == true) {
@@ -139,11 +167,11 @@
 	
 	ofDisableTextureEdgeHack();
 	
-	//self->mWindow->events().notifySetup();
+	self->mWindow->events().notifySetup();
 	//self->window->renderer()->clear();
 	
 	int animationFrameInterval = 1;
-	self.animationTimer = [NSTimer scheduledTimerWithTimeInterval:(NSTimeInterval)((1.0 / 60.0) * animationFrameInterval)
+	animationTimer = [NSTimer scheduledTimerWithTimeInterval:(NSTimeInterval)((1.0 / 60.0) * animationFrameInterval)
 														   target:self
 														 selector:@selector(drawView:)
 														 userInfo:nil
@@ -166,15 +194,16 @@
 	if (isViewLaidOut) {
         [self updateViewLayout];
 	} else {
-		[self setupOfApp];
-		isViewLaidOut = true;
+        if (self.autoSetup) {
+            [self setupOfApp];
+        }
 	}
 }
 
 
 - (void) removeFromSuperview {
-	[self.animationTimer invalidate];
-	self.animationTimer = nil;
+	[animationTimer invalidate];
+	animationTimer = nil;
 	self->mWindow->close();
 }
 
