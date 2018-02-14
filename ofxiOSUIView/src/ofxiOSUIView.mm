@@ -28,6 +28,8 @@
     ES1Renderer* renderer;
     NSLock * glLock;
     NSTimer* animationTimer;
+    
+    CADisplayLink* displayLink;
 }
 @end
 
@@ -108,12 +110,27 @@
 	 */
     
     activeTouches = [[NSMutableDictionary alloc] init];
-    }
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(toggleActive:) name:UIApplicationWillEnterForegroundNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(toggleActive:) name:UIApplicationDidEnterBackgroundNotification object:nil];
+    
+}
 
+- (void) toggleActive: (NSNotification*) notification {
+    if ([notification.name isEqualToString:UIApplicationWillEnterForegroundNotification]) {
+
+        displayLink.paused = NO;
+    } else {
+
+        displayLink.paused = YES;
+    }
+}
 
 - (void)drawView:(id)sender {
-	// NSLog(@"Window size: %f, %f", self.bounds.size.width, self.bounds.size.height);	
-	
+	// NSLog(@"Window size: %f, %f", self.bounds.size.width, self.bounds.size.height);
+    if ([[UIApplication sharedApplication] applicationState] != UIApplicationStateActive) {
+        return;
+    }
 	[glLock lock];
 	[renderer startRender];
 	
@@ -168,15 +185,9 @@
 	ofDisableTextureEdgeHack();
 	
 	self->mWindow->events().notifySetup();
-	//self->window->renderer()->clear();
-	
-	int animationFrameInterval = 1;
-	animationTimer = [NSTimer scheduledTimerWithTimeInterval:(NSTimeInterval)((1.0 / 60.0) * animationFrameInterval)
-														   target:self
-														 selector:@selector(drawView:)
-														 userInfo:nil
-														  repeats:TRUE];
-    
+
+    displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(drawView:)];
+    [displayLink addToRunLoop:[NSRunLoop mainRunLoop] forMode:NSDefaultRunLoopMode];
     bInit = YES;
 }
 
@@ -250,8 +261,6 @@
 - (void)updateDimensions
 {
 	
-	//self->window->windowPos.set(self.frame.origin.x * scaleFactor, self.frame.origin.y * scaleFactor, 0);
-	//self->window->windowSize.set(self.bounds.size.width * scaleFactor, self.bounds.size.height * scaleFactor, 0);
     ofAppiOSWindowUIView* window = (ofAppiOSWindowUIView*)ofGetMainLoop()->getCurrentWindow().get();
     
     window->setWindowPosition(self.frame.origin.x * scaleFactor, self.frame.origin.y * scaleFactor);
@@ -265,8 +274,6 @@
     
     window->screenSize.x = currentScreen.bounds.size.width * scaleFactor;
     window->screenSize.y = currentScreen.bounds.size.height * scaleFactor;
-    
-	//self->window->screenSize.set(currentScreen.bounds.size.width * scaleFactor, currentScreen.bounds.size.height * scaleFactor, 0);
 }
 
 
@@ -308,7 +315,6 @@
 //------------------------------------------------------
 
 -(void) resetTouches {
-    
     [activeTouches removeAllObjects];
 }
 
