@@ -183,8 +183,6 @@
     ofxiOSAlerts.addListener((ofxiOSBridgeApp*)self->app);
 	
 	ofDisableTextureEdgeHack();
-	
-	self->mWindow->events().notifySetup();
 
     displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(drawView:)];
     [displayLink addToRunLoop:[NSRunLoop mainRunLoop] forMode:NSDefaultRunLoopMode];
