@@ -87,6 +87,9 @@
 	//settings.windowMode = OF_FULLSCREEN;
 	
 	//self->window = (ofAppiOSWindow *)(ofCreateWindow(settings).get());
+    
+    ofSetDataPathRoot([[NSString stringWithFormat:@"%@/", [[NSBundle mainBundle] resourcePath]] cStringUsingEncoding:NSUTF8StringEncoding]);
+    
     ofInit();
     
     ofiOSWindowSettings2 windowSettings;
